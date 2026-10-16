@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 class="form-titulo" style="margin-bottom: 0;">📢 Cartelera de Novedades y Licencias</h2>
+  </div>
+
+  <!-- Formulario de carga (Uso exclusivo de Auditoría Central) -->
+  <form action="/novedades" method="POST" class="form-seccion" style="background: #fff; padding: 20px;">
+    <h3 style="margin-bottom: 16px; color: var(--azul-hsi);">➕ Publicar Nuevo Aviso</h3>
+    
+    <div class="grid-formulario" style="grid-template-columns: 1fr;">
+      <div class="form-grupo">
+        <label>Título / Especialidad</label>
+        <input type="text" name="titulo" required class="form-control" placeholder="Ej: Licencia Traumatología - Dr. García" />
+      </div>
+      <div class="form-grupo">
+        <label>Detalle y Vigencia</label>
+        <textarea name="descripcion" required rows="3" class="form-control" placeholder="Ej: Ausente del 15/10 al 30/10. Derivar casos a guardia general."></textarea>
+      </div>
+    </div>
+    
+    <div style="margin-top: 16px; text-align: right;">
+      <button type="submit" class="btn-primario" style="background: #ffa800; width: auto;">
+        Publicar Novedad
+      </button>
+    </div>
+  </form>
+
+  <!-- Muro de Avisos -->
+  <div style="margin-top: 24px; display: flex; flex-direction: column; gap: 16px;">
+    {% for n in novedades %}
+      <div style="background: #fff; border-left: 5px solid {% if n.activa %}#f64e60{% else %}#b5b5c3{% endif %}; border-radius: 8px; padding: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h4 style="margin: 0 0 8px 0; font-size: 16px; color: {% if n.activa %}#1e293b{% else %}#94a3b8{% endif %};">
+              {{ n.titulo }}
+            </h4>
+            <span style="font-size: 11px; color: #7e8299; font-weight: 600;">
+              📅 Publicado el {{ n.fecha_publicacion }}
+            </span>
+          </div>
+          
+          <!-- Badge de Estado -->
+          {% if n.activa %}
+            <span class="badge-estado" style="background: #ffe2e5; color: #f64e60;">ACTIVA</span>
+          {% else %}
+            <span class="badge-estado" style="background: #f3f6f9; color: #b5b5c3;">FINALIZADA</span>
+          {% endif %}
+        </div>
+
+        <p style="margin: 12px 0 0 0; font-size: 14px; color: {% if n.activa %}#334155{% else %}#94a3b8{% endif %}; line-height: 1.5;">
+          {{ n.descripcion }}
+        </p>
+
+        <!-- Botón para desactivar (Solo visible si está activa) -->
+        {% if n.activa %}
+          <div style="margin-top: 16px; text-align: right; border-top: 1px dashed #e2e8f0; padding-top: 12px;">
+            <a href="/novedades/desactivar/{{ n.id_novedad }}" class="btn-cerrar-ficha" style="font-size: 11px;" onclick="return confirm('¿Marcar este aviso como finalizado?')">
+              Dar de baja
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 40px; background: #fff; border-radius: 8px; color: #7e8299; font-style: italic;">
+        No hay novedades ni licencias médicas registradas en el sistema.
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}
